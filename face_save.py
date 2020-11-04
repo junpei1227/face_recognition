@@ -7,7 +7,7 @@ import time
 HAAR_FILE = "haarcascade_frontalface_alt.xml"
 
 
-def trimming_face_image(image, face, size=(32,24)):
+def trimming_face_image(image, face, size=(40,40)):
     """
     画像から顔を切り取り,リサイズした画像を返す
     """
@@ -18,9 +18,9 @@ def trimming_face_image(image, face, size=(32,24)):
         face_image = cv2.resize(face_image, size)
         return face_image
 
-def save_face_image(dic_path, name, images_num=5, size=(32,24)):
+def save_face_image(dir_path, name, images_num=5, size=(40,40)):
     """
-    dic_pathにname+count.pngの形式でimages_numの枚数分、sizeのサイズで顔画像を保存する
+    dir_pathにname+count.pngの形式でimages_numの枚数分、sizeのサイズで顔画像を保存する
     """
     # カメラの開始
     cap = cv2.VideoCapture(0)
@@ -40,8 +40,8 @@ def save_face_image(dic_path, name, images_num=5, size=(32,24)):
         if len(face) == 1:
             # 顔画像を切り取る
             face_image = trimming_face_image(stream, face, size)
-            # dic_path/name+count.pngの形式で保存 
-            cv2.imwrite("{}/{}{}.png".format(dic_path, name, count), face_image)
+            # dir_path/name+count.pngの形式で保存 
+            cv2.imwrite("{}/{}{}.png".format(dir_path, name, count), face_image)
             count += 1
             time.sleep(1)
 
@@ -62,7 +62,7 @@ def save_face_image(dic_path, name, images_num=5, size=(32,24)):
 
 if __name__ == "__main__":
     count = 10
-    dic_path = "train_data/0"
+    dir_path = "train_data/0"
     name = "tamura" 
-    size = (32, 24)
-    save_face_image(dic_path, name, count, size)
+    size = (40, 40)
+    save_face_image(dir_path, name, count, size)

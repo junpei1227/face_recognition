@@ -11,8 +11,8 @@ except ImportError:
     import joblib
 
 
-IMAGE_SIZE = 24
-IMAGE_SIZE_Y = 32
+IMAGE_SIZE = 40
+IMAGE_SIZE_Y = 40 
 COLOR_BYTE = 3
 CATEGORY_NUM = 4
 
