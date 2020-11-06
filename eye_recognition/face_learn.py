@@ -11,14 +11,10 @@ except ImportError:
     import joblib
 
 
-IMAGE_SIZE = 40
-IMAGE_SIZE_Y = 40
-COLOR_BYTE = 3
-CATEGORY_NUM = 4
 
 ## ラベル名(0～)を付けたディレクトリに分類されたイメージファイルを読み込む
 ## 入力パスはラベル名の上位のディレクトリ
-def load_faceimage(path):
+def load_faceimage(path, IMAGE_SIZE=40, IMAGE_SIZE_Y=40, COLOR_BYTE=3, CATEGORY_NUM=4):
 
     # ファイル一覧を取得
     files = glob.glob(os.path.join(path, '*/*.png'))
@@ -50,13 +46,9 @@ def load_faceimage(path):
 #####################################
 from sklearn import svm, metrics
 
-## 学習データのディレクトリ、テストデータのディレクトリを指定する
-if __name__ == '__main__':
-    train_path = "train_data_eye"
-    test_path = "test_data_eye"
-
-    # 学習データの読み込み
-    train = load_faceimage(train_path)
+def save_SVClearn_data(train, savefile):
+    """
+    """
 
     # 手法:線形SVM
     classifier = svm.LinearSVC()
@@ -64,11 +56,33 @@ if __name__ == '__main__':
     # 学習
     classifier.fit(train.data, train.target)
 
-    savefile = "face_result_eye.pkl"
     # 学習モデルを保存する
     joblib.dump(classifier, savefile)
     print('学習結果はファイル {0} に保存されました'.format(savefile))
 
+    return classifier
+
+
+    
+
+
+## 学習データのディレクトリ、テストデータのディレクトリを指定する
+if __name__ == '__main__':
+    train_path = "train_data_eye"
+    test_path = "test_data_eye"
+    savefile = "face_result_eye_6.pkl"
+    IMAGE_SIZE = 40
+    IMAGE_SIZE_Y = 40
+    COLOR_BYTE = 3
+    CATEGORY_NUM = 6
+
+    
+    # 学習データの読み込み
+    train = load_faceimage(train_path)
+    print(train.data.shape)
+
+    # 学習データから学習させてsavefileに保存する
+    save_SVClearn_data(train, savefile)
 
     # テストデータの読み込み
     test = load_faceimage(test_path)

@@ -5,6 +5,7 @@ try:
     from sklearn.externals import joblib
 except ImportError:
     import joblib
+from face_csv import get_csv_to_dic
  
 
 def trimming_face_image(image, face, size=(40,40)):
@@ -18,15 +19,32 @@ def trimming_face_image(image, face, size=(40,40)):
         face_image = cv2.resize(face_image, size)
         return face_image
 
+def get_predicted(face_image, clsfile, IMAGE_SIZE=40, IMAGE_SIZE_Y=40, COLOR_BYTE=3):
+    """
+    """ 
+    # 学習済のファイルを読み込む
+    loaded_cls = joblib.load(clsfile)
+    # 学習モデルの形式に変換
+    flat_face_image = face_image.reshape((-1, IMAGE_SIZE * IMAGE_SIZE_Y * COLOR_BYTE))
+    # 誰の目か予測する
+    predicted = loaded_cls.predict(flat_face_image)[0]
+    return predicted
+
 
 # HaarLike特徴抽出アルゴリズムのパス
 # 任意のパス
 HAAR_FILE = "/home/tam/anaconda3/envs/py36/share/OpenCV/haarcascades/haarcascade_righteye_2splits.xml"
 #  学習した分類機のファイル
-clsfile = "face_result_eye.pkl"
-# 読み込む
-loaded_cls = joblib.load(clsfile)
+clsfile = "face_result_eye_6.pkl"
 
+IMAGE_SIZE = 40
+IMAGE_SIZE_Y = 40
+COLOR_BYTE = 3
+
+font = cv2.FONT_HERSHEY_SIMPLEX
+
+csv_file = "train_data_eye.csv"
+name_dic = get_csv_to_dic(csv_file)
 
 cap = cv2.VideoCapture(0)
 while True: 
@@ -41,17 +59,15 @@ while True:
 
     # 認識したものが一つの時処理を行う
     if len(face) == 1:
-        # 学習モデルの形式に変換
         face_image = trimming_face_image(stream, face)
-        flat_face_image = face_image.reshape((-1, 40 * 40 * 3))
-        # 誰の目か予測する
-        predicted = loaded_cls.predict(flat_face_image)
-        # 予測結果を表示する
-        print(predicted)
-    
-    # 認識した目を赤い四角で囲う
-    for x, y, w, h in face:
-        cv2.rectangle(stream, (x,y), (x+w,y+h), (0,0,255), 1)
+        predicted = get_predicted(face_image,clsfile)
+        # 予測結果から名前を取得
+        name_text = name_dic[str(predicted)]
+        for x, y, w, h in face:
+            # 認識した目を赤い四角で囲う
+            cv2.rectangle(stream, (x,y), (x+w,y+h), (0,0,255), 1)
+            # 名前を表示
+            cv2.putText(stream, name_text,(x,y-10), font, 1, (0,255,0), 3, cv2.LINE_AA)
 
     # 画像をウインドウに表示
     cv2.imshow("img", stream)
