@@ -27,7 +27,7 @@ def get_predicted(face_image, clsfile, IMAGE_SIZE=40, IMAGE_SIZE_Y=40, COLOR_BYT
     loaded_cls = joblib.load(clsfile)
     # 学習モデルの形式に変換
     flat_face_image = face_image.reshape((-1, IMAGE_SIZE * IMAGE_SIZE_Y * COLOR_BYTE))
-    # 誰の目か予測する
+    # 誰の顔か予測する
     predicted = loaded_cls.predict(flat_face_image)[0]
     return predicted
 
@@ -65,7 +65,7 @@ while True:
         # 予測結果から名前を取得
         name_text = name_dic[str(predicted)]
         for x, y, w, h in face:
-            # 認識した目を赤い四角で囲う
+            # 認識した顔を赤い四角で囲う
             cv2.rectangle(stream, (x,y), (x+w,y+h), (0,0,255), 1)
             # 名前を表示
             cv2.putText(stream, name_text,(x,y-10), font, 1, (0,255,0), 3, cv2.LINE_AA)
